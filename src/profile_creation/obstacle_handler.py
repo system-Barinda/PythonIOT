@@ -7,7 +7,8 @@ The state transfer will automatically handle sending to headful browser
 
 import os
 # Corrected Import: Assuming websocket_server.py is accessible
-from websocket_server import StateTransferWebSocketServer 
+from src.core.websocket_server import StateTransferWebSocketServer
+
 
 class ObstacleHandler:
     """Detects and handles obstacles during profile creation"""
