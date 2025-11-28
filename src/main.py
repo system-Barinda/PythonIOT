@@ -7,7 +7,7 @@ import asyncio
 import os
 from dotenv import load_dotenv
 from playwright.async_api import async_playwright
-from src.core.database import Database
+from core.database import Database
 from src.core.websocket_server import ConsumingAppsWebSocketServer, ProfileDataWebSocketServer, StateTransferWebSocketServer
 from src.profile_creation.profile_creator import ProfileCreator
 from src.profile_editing.profile_editor import ProfileEditor
