@@ -12,6 +12,7 @@ from contextlib import asynccontextmanager
 
 Base = declarative_base()
 
+
 class Profile(Base):
     __tablename__ = 'profiles'
     
@@ -30,58 +31,59 @@ class Profile(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     is_active = Column(Boolean, default=True)
 
+
 class Match(Base):
     __tablename__ = 'matches'
     
     id = Column(Integer, primary_key=True)
-    # Corrected: Added Foreign Key constraint to profiles.profile_id
     profile_id = Column(String, ForeignKey('profiles.profile_id'), index=True)
-    # Corrected: Added Foreign Key constraint to profiles.profile_id
     matched_profile_id = Column(String, ForeignKey('profiles.profile_id'), index=True)
     compatibility_score = Column(Integer)
     matched_at = Column(DateTime, default=datetime.utcnow)
+
 
 class Message(Base):
     __tablename__ = 'messages'
     
     id = Column(Integer, primary_key=True)
-    # Corrected: Added Foreign Key constraint to profiles.profile_id
     profile_id = Column(String, ForeignKey('profiles.profile_id'), index=True)
-    # Corrected: Changed to Integer and added Foreign Key constraint to matches.id
     match_id = Column(Integer, ForeignKey('matches.id'), index=True)
     content = Column(Text)
     direction = Column(String)  # 'sent' or 'received'
     timestamp = Column(DateTime, default=datetime.utcnow)
     is_read = Column(Boolean, default=False)
 
+
 class Database:
     def __init__(self):
-        database_url = os.getenv('DATABASE_URL', 'postgresql://user:password@localhost:5432/okcupid')
-        # Convert to async URL
-        if database_url.startswith('postgresql://'):
-            database_url = database_url.replace('postgresql://', 'postgresql+asyncpg://', 1)
-        
+        # FIXED getenv() usage
+        database_url = os.getenv(
+            "DATABASE_URL",
+            "postgresql+asyncpg://postgres:YOUR_PASSWORD@localhost:5432/iot_db"
+        )
+
+        # Auto-convert sync URL → async URL
+        if database_url.startswith("postgresql://"):
+            database_url = database_url.replace("postgresql://", "postgresql+asyncpg://")
+
         self.engine = create_async_engine(database_url, echo=False)
         self.SessionLocal = async_sessionmaker(
             self.engine, class_=AsyncSession, expire_on_commit=False
         )
-    
+
     async def connect(self):
-        """Create database tables"""
         async with self.engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         print("✅ Database tables created")
-    
+
     async def disconnect(self):
-        """Close database connection"""
         await self.engine.dispose()
-    
+
     @asynccontextmanager
     async def get_session(self):
-        """Get database session as async context manager"""
         async with self.SessionLocal() as session:
             try:
                 yield session
             except Exception:
                 await session.rollback()
-                raise;
+                raise
