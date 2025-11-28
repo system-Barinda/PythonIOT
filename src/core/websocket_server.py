@@ -129,4 +129,3 @@ class StateTransferWebSocketServer:
         host, port = self.url.replace('ws://', '').split(':')
         self.server = await websockets.serve(self.handler, host, int(port))
         print(f"✅ StateTransferWebSocketServer started on {self.url}")
-

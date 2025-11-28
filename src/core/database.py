@@ -5,7 +5,7 @@ Uses PostgreSQL as specified in the guide
 
 import os
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy import Column, Integer, String, Text, JSON, DateTime, Boolean
+from sqlalchemy import Column, Integer, String, Text, JSON, DateTime, Boolean, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 from contextlib import asynccontextmanager
@@ -34,8 +34,10 @@ class Match(Base):
     __tablename__ = 'matches'
     
     id = Column(Integer, primary_key=True)
-    profile_id = Column(String, index=True)
-    matched_profile_id = Column(String, index=True)
+    # Corrected: Added Foreign Key constraint to profiles.profile_id
+    profile_id = Column(String, ForeignKey('profiles.profile_id'), index=True)
+    # Corrected: Added Foreign Key constraint to profiles.profile_id
+    matched_profile_id = Column(String, ForeignKey('profiles.profile_id'), index=True)
     compatibility_score = Column(Integer)
     matched_at = Column(DateTime, default=datetime.utcnow)
 
@@ -43,8 +45,10 @@ class Message(Base):
     __tablename__ = 'messages'
     
     id = Column(Integer, primary_key=True)
-    profile_id = Column(String, index=True)
-    match_id = Column(String, index=True)
+    # Corrected: Added Foreign Key constraint to profiles.profile_id
+    profile_id = Column(String, ForeignKey('profiles.profile_id'), index=True)
+    # Corrected: Changed to Integer and added Foreign Key constraint to matches.id
+    match_id = Column(Integer, ForeignKey('matches.id'), index=True)
     content = Column(Text)
     direction = Column(String)  # 'sent' or 'received'
     timestamp = Column(DateTime, default=datetime.utcnow)
@@ -80,5 +84,4 @@ class Database:
                 yield session
             except Exception:
                 await session.rollback()
-                raise
-
+                raise;
