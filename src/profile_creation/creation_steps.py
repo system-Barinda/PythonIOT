@@ -96,4 +96,3 @@ class CreationSteps:
         """Add interests to profile"""
         # TODO: Implement interest selection
         pass
-
