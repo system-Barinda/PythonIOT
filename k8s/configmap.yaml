@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: okcupid-config
+data:
+  nst-browser-url: "ws://nst-browser-service:3000"
+  profile-data-ws-url: "ws://0.0.0.0:8001"
+  consuming-apps-ws-url: "ws://0.0.0.0:8002"
+  state-transfer-ws-url: "ws://0.0.0.0:8003"
+

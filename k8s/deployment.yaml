@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: okcupid-automation
+  labels:
+    app: okcupid-automation
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: okcupid-automation
+  template:
+    metadata:
+      labels:
+        app: okcupid-automation
+    spec:
+      containers:
+      - name: okcupid-automation
+        image: okcupid-automation:latest
+        command: ["python", "src/main.py"]
+        env:
+        - name: NST_BROWSER_URL
+          valueFrom:
+            configMapKeyRef:
+              name: okcupid-config
+              key: nst-browser-url
+        - name: PROFILE_DATA_WS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: okcupid-config
+              key: profile-data-ws-url
+        - name: CONSUMING_APPS_WS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: okcupid-config
+              key: consuming-apps-ws-url
+        - name: STATE_TRANSFER_WS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: okcupid-config
+              key: state-transfer-ws-url
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: okcupid-secrets
+              key: database-url
+        - name: DEV_MODE
+          value: "false"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: okcupid-automation-service
+spec:
+  selector:
+    app: okcupid-automation
+  ports:
+  - protocol: TCP
+    port: 8001
+    name: profile-data
+  - protocol: TCP
+    port: 8002
+    name: consuming-apps
+  - protocol: TCP
+    port: 8003
+    name: state-transfer
+  type: ClusterIP
