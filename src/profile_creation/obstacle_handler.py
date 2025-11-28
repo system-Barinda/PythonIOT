@@ -1,10 +1,13 @@
+# obstacle_handler.py
+
 """
 Handles obstacles (CAPTCHA, verification, etc.)
 The state transfer will automatically handle sending to headful browser
 """
 
 import os
-from src.core.websocket_server import StateTransferWebSocketServer
+# Corrected Import: Assuming websocket_server.py is accessible
+from websocket_server import StateTransferWebSocketServer 
 
 class ObstacleHandler:
     """Detects and handles obstacles during profile creation"""
@@ -112,4 +115,3 @@ class ObstacleHandler:
         # Transfer state to headful browser
         await self.state_transfer_ws.transfer_state(state_data)
         print("✅ State transferred to headful browser for resolution")
-
