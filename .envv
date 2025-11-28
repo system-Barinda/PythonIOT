@@ -1,0 +1,1 @@
+psql 'postgresql://neondb_owner:npg_ZFPR3YLzMb6c@ep-young-heart-a4261tls-pooler.us-east-1.aws.neon.tech/barinda_python?sslmode=require&channel_binding=require'
