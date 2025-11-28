@@ -50,4 +50,4 @@ class ProfileValidator:
         except Exception as e:
             print(f"❌ Error validating profile: {e}")
             return False
-
+```<ctrl63>
