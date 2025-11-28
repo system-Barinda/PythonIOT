@@ -6,6 +6,8 @@ Main ProfileEditor class
 from .settings_navigator import SettingsNavigator
 from .field_updater import FieldUpdater
 from .edit_validators import EditValidators
+from src.core.database import Profile
+
 
 class ProfileEditor:
     """

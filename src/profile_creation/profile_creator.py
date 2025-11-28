@@ -6,7 +6,7 @@ Main ProfileCreator class that orchestrates profile creation
 """
 
 # Corrected Import: Assuming database.py is accessible
-from database import Profile
+from src.core.database import Profile
 from .creation_steps import CreationSteps
 from .obstacle_handler import ObstacleHandler
 from .validators import ProfileValidator

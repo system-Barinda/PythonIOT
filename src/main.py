@@ -7,8 +7,15 @@ import asyncio
 import os
 from dotenv import load_dotenv
 from playwright.async_api import async_playwright
-from core.database import Database
-from src.core.websocket_server import ConsumingAppsWebSocketServer, ProfileDataWebSocketServer, StateTransferWebSocketServer
+
+# ✅ FIXED IMPORTS
+from src.core.database import Database
+from src.core.websocket_server import (
+    ConsumingAppsWebSocketServer,
+    ProfileDataWebSocketServer,
+    StateTransferWebSocketServer
+)
+
 from src.profile_creation.profile_creator import ProfileCreator
 from src.profile_editing.profile_editor import ProfileEditor
 from src.swiping.swipe_manager import SwipeManager
@@ -37,9 +44,8 @@ class OkCupidAutomation:
         )
     
     async def initialize(self):
-        """Initialize browser and database connections"""
         print("🚀 Initializing OkCupid Automation...")
-        
+
         # Connect to database
         await self.database.connect()
         print("✅ Database connected")
@@ -51,29 +57,23 @@ class OkCupidAutomation:
             self.state_transfer_ws.start()
         )
         print("✅ WebSocket servers started")
-        
+
         # Initialize Playwright
         self.playwright = await async_playwright().start()
-        
-        # Connect to NST Browser or create local browser
-        if self.nst_browser_url:
-            try:
-                self.browser = await self.playwright.chromium.connect_over_cdp(self.nst_browser_url)
-                print(f"✅ Connected to NST Browser at {self.nst_browser_url}")
-            except Exception as e:
-                print(f"⚠️  Could not connect to NST Browser: {e}")
-                print("🔄 Falling back to local browser...")
-                self.browser = await self.playwright.chromium.launch(
-                    headless=not self.dev_mode
-                )
-        else:
+
+        # Connect to NST Browser or launch local browser
+        try:
+            self.browser = await self.playwright.chromium.connect_over_cdp(self.nst_browser_url)
+            print(f"✅ Connected to NST Browser at {self.nst_browser_url}")
+        except Exception as e:
+            print(f"⚠️ Could not connect to NST Browser: {e}")
+            print("🔄 Launching local browser...")
             self.browser = await self.playwright.chromium.launch(
                 headless=not self.dev_mode
             )
             print("✅ Local browser launched")
     
     async def create_profile(self, profile_data):
-        """Create a new profile using Developer 1's module"""
         context = await self.browser.new_context()
         page = await context.new_page()
         
@@ -84,7 +84,6 @@ class OkCupidAutomation:
         return success
     
     async def update_profile(self, profile_id, updated_data):
-        """Update profile using Developer 2's module"""
         context = await self.browser.new_context()
         page = await context.new_page()
         
@@ -95,18 +94,15 @@ class OkCupidAutomation:
         return success
     
     async def start_swiping(self, profile_id, preferences):
-        """Start swiping using Developer 3's module"""
         context = await self.browser.new_context()
         page = await context.new_page()
         
         swipe_manager = SwipeManager(page, preferences, self.database)
         await swipe_manager.start_swiping(profile_id)
-        
-        # Keep context open for continuous swiping
-        return context
+
+        return context  # keep running
     
     async def scrape_prospect(self, profile_id):
-        """Scrape prospect info using Developer 4's module"""
         context = await self.browser.new_context()
         page = await context.new_page()
         
@@ -117,22 +113,15 @@ class OkCupidAutomation:
         return prospect_data
     
     async def monitor_messages(self, profile_id):
-        """Monitor messages using Developer 5's module"""
         context = await self.browser.new_context()
         page = await context.new_page()
         
-        monitor = MessageMonitor(
-            page, 
-            profile_id, 
-            self.consuming_apps_ws
-        )
+        monitor = MessageMonitor(page, profile_id, self.consuming_apps_ws)
         await monitor.start_monitoring()
-        
-        # Keep context open for continuous monitoring
-        return context
+
+        return context  # keep running
     
     async def cleanup(self):
-        """Cleanup resources"""
         if self.browser:
             await self.browser.close()
         if self.playwright:
@@ -141,20 +130,14 @@ class OkCupidAutomation:
         print("✅ Cleanup complete")
 
 async def main():
-    """Main entry point"""
     automation = OkCupidAutomation()
     
     try:
         await automation.initialize()
-        
-        # Example usage - you would call these based on your workflow
-        # profile_data = {...}
-        # await automation.create_profile(profile_data)
-        
-        # Keep running
+
         print("✅ Automation system ready")
-        await asyncio.Event().wait()  # Keep running indefinitely
-        
+        await asyncio.Event().wait()  # keep alive
+    
     except KeyboardInterrupt:
         print("\n🛑 Shutting down...")
     finally:
@@ -162,4 +145,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
