@@ -15,12 +15,12 @@ class ProfileValidator:
         Returns True if profile is valid, False otherwise
         """
         try:
-            # Check if we're on the dashboard/home page
+            # Check current URL for dashboard/home signs
             current_url = self.page.url
             if 'okcupid.com' in current_url and ('home' in current_url or 'dashboard' in current_url):
                 return True
             
-            # Check for profile completion indicators
+            # Check for page text indicators
             completion_indicators = [
                 'profile complete',
                 'welcome',
@@ -30,11 +30,12 @@ class ProfileValidator:
             
             page_text = await self.page.text_content('body')
             if page_text:
+                page_text = page_text.lower()
                 for indicator in completion_indicators:
-                    if indicator.lower() in page_text.lower():
+                    if indicator in page_text:
                         return True
             
-            # Check for navigation elements that indicate logged in state
+            # Check for navigation UI elements
             nav_selectors = [
                 'nav',
                 '.navigation',
@@ -50,4 +51,3 @@ class ProfileValidator:
         except Exception as e:
             print(f"❌ Error validating profile: {e}")
             return False
-```<ctrl63>
