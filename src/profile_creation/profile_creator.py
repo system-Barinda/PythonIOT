@@ -1,8 +1,12 @@
+# profile_creator.py
+
 """
 Developer 1: Profile Creation
 Main ProfileCreator class that orchestrates profile creation
 """
 
+# Corrected Import: Assuming database.py is accessible
+from database import Profile
 from .creation_steps import CreationSteps
 from .obstacle_handler import ObstacleHandler
 from .validators import ProfileValidator
@@ -70,14 +74,14 @@ class ProfileCreator:
         """Save created profile to database"""
         async with self.database.get_session() as session:
             # Create profile record
-            from src.core.database import Profile
+            # Profile is already imported at the top of the file
             profile = Profile(
                 profile_id=self.profile_data.get('email'),
                 email=self.profile_data.get('email'),
+                password=self.profile_data.get('password'), # FIXED: Added missing password field
                 name=self.profile_data.get('name'),
                 age=self.profile_data.get('age'),
                 gender=self.profile_data.get('gender')
             )
             session.add(profile)
             await session.commit()
-
