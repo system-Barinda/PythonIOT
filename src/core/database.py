@@ -4,6 +4,9 @@ Uses PostgreSQL as specified in the guide
 """
 
 import os
+from dotenv import load_dotenv   # <-- ADD THIS
+load_dotenv()                    # <-- ADD THIS
+
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy import Column, Integer, String, Text, JSON, DateTime, Boolean, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
@@ -56,13 +59,12 @@ class Message(Base):
 
 class Database:
     def __init__(self):
-        # FIXED getenv() usage
         database_url = os.getenv(
-    "DATABASE_URL",
-    "postgresql+asyncpg://postgres:12345@localhost:5432/iot_db"
-)
+            "DATABASE_URL",
+            "postgresql+asyncpg://postgres:12345@localhost:5432/iot_db"
+        )
 
-        # Auto-convert sync URL → async URL
+        # Convert sync → async
         if database_url.startswith("postgresql://"):
             database_url = database_url.replace("postgresql://", "postgresql+asyncpg://")
 
