@@ -58,9 +58,9 @@ class Database:
     def __init__(self):
         # FIXED getenv() usage
         database_url = os.getenv(
-            "DATABASE_URL",
-            "postgresql+asyncpg://postgres:YOUR_PASSWORD@localhost:5432/iot_db"
-        )
+    "DATABASE_URL",
+    "postgresql+asyncpg://postgres:12345@localhost:5432/iot_db"
+)
 
         # Auto-convert sync URL → async URL
         if database_url.startswith("postgresql://"):
